@@ -1,5 +1,5 @@
-// All sayings in an array
-const sayings = [
+// --- Default Sayings ---
+const defaultSayings = [
     "That's what football's all about!",
     "He’ll be disappointed with that.",
     "Unbelievable, Jeff!",
@@ -18,74 +18,127 @@ const sayings = [
     "They’ve got to believe now!"
 ];
 
-// Randomly shuffle the array (Fisher-Yates)
+// --- App State ---
+let sayings = [];
+let customMode = false;
+let soundOn = true;
+let highContrast = false;
+
+// --- Utility ---
 function shuffle(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
+    let array = arr.slice();
+    for (let i = array.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+        [array[i], array[j]] = [array[j], array[i]];
     }
-    return arr;
+    return array;
 }
 
-// Render the shuffled bingo grid
-function renderBingo() {
-    const grid = document.getElementById('bingo-grid');
+// --- Render the Bingo Board ---
+function renderBingo(fromStorage=false) {
+    let grid = document.getElementById('bingo-grid');
     grid.innerHTML = '';
-    shuffle([...sayings]).forEach(saying => {
+    let usedSayings = sayings.length ? sayings : defaultSayings;
+    let shuffled = shuffle(usedSayings);
+    let activeStates = [];
+    if (fromStorage) {
+        try {
+            const state = JSON.parse(localStorage.getItem('bingo-state'));
+            if (state && state.activeStates && state.sayings) {
+                shuffled = state.sayings;
+                activeStates = state.activeStates;
+            }
+        } catch {}
+    }
+    shuffled.forEach((saying, idx) => {
         const square = document.createElement('div');
         square.className = 'bingo-square';
+        square.setAttribute('tabindex', '0');
+        square.setAttribute('role', 'gridcell');
+        square.setAttribute('aria-label', saying);
         square.textContent = saying;
-        square.onclick = () => {
-            square.classList.toggle('active');
-            checkWin();
+        if (fromStorage && activeStates[idx]) square.classList.add('active');
+        square.onclick = square.onkeydown = (e) => {
+            if (e.type === 'click' || e.key === ' ' || e.key === 'Enter') {
+                square.classList.toggle('active');
+                saveState();
+                checkWin();
+            }
         };
         grid.appendChild(square);
     });
+    saveState();
 }
 
-// Check for full house (all squares marked)
+// --- Save and Restore State ---
+function saveState() {
+    const squares = Array.from(document.querySelectorAll('.bingo-square'));
+    const activeStates = squares.map(sq => sq.classList.contains('active'));
+    const sayings = squares.map(sq => sq.textContent);
+    localStorage.setItem('bingo-state', JSON.stringify({activeStates, sayings}));
+    localStorage.setItem('bingo-settings', JSON.stringify({
+        custom: customMode,
+        customSayings: customMode ? sayings : null,
+        soundOn,
+        highContrast
+    }));
+}
+function restoreSettings() {
+    try {
+        const settings = JSON.parse(localStorage.getItem('bingo-settings'));
+        if (settings) {
+            if (settings.custom && settings.customSayings) {
+                sayings = settings.customSayings;
+                customMode = true;
+            }
+            soundOn = settings.soundOn !== false;
+            highContrast = !!settings.highContrast;
+        }
+    } catch {}
+}
+
+// --- Win Detection ---
 function checkWin() {
-    const squares = document.querySelectorAll('.bingo-square');
-    const allMarked = Array.from(squares).every(sq => sq.classList.contains('active'));
-    if (allMarked) {
-        setTimeout(() => {
-            // Add confetti effect (optional, simple)
-            confetti();
-            alert("Bingo! Full House! 🎉");
-        }, 120);
+    const squares = Array.from(document.querySelectorAll('.bingo-square'));
+    const grid = [];
+    const size = Math.sqrt(squares.length);
+    for (let i = 0; i < squares.length; i += size) {
+        grid.push(squares.slice(i, i + size));
+    }
+    let winType = "";
+    // Rows
+    for (let row of grid) {
+        if (row.every(sq => sq.classList.contains('active'))) winType = "line";
+    }
+    // Columns
+    for (let c = 0; c < size; c++) {
+        if (grid.map(row => row[c]).every(sq => sq.classList.contains('active'))) winType = "line";
+    }
+    // Diagonals
+    if (grid.map((row, i) => row[i]).every(sq => sq.classList.contains('active'))) winType = "line";
+    if (grid.map((row, i) => row[size - 1 - i]).every(sq => sq.classList.contains('active'))) winType = "line";
+    // Full House
+    if (squares.every(sq => sq.classList.contains('active'))) winType = "full";
+    if (winType === "full") {
+        winCelebration("Bingo! Full House! 🎉");
+    } else if (winType === "line") {
+        winCelebration("Bingo! Line complete! 🎉");
     }
 }
 
-// Reset card
-document.getElementById('reset-btn').onclick = () => {
-    renderBingo();
-};
+function winCelebration(msg) {
+    confetti();
+    if (soundOn) document.getElementById('win-audio').play();
+    setTimeout(() => {
+        alert(msg);
+    }, 80);
+}
 
-// Info/help
-document.querySelector('.info-icon').onclick = () => {
-    alert("How to play:\n\nTap each square when Ally says it. Mark every square for a Full House!\n\nReset Card makes a new random card.");
-};
-
-// Basic confetti (minimal, pure JS)
+// --- Confetti (minimal, pure JS) ---
 function confetti() {
-    for(let i=0; i<60; i++) {
+    for(let i=0; i<45; i++) {
         let conf = document.createElement('div');
         conf.innerHTML = '🎊';
         conf.style.position = 'fixed';
         conf.style.left = (Math.random()*100) + 'vw';
-        conf.style.top = '-3em';
-        conf.style.fontSize = (Math.random()*24+16) + 'px';
-        conf.style.zIndex = 9999;
-        conf.style.transition = 'top 1.4s linear';
-        document.body.appendChild(conf);
-        setTimeout(() => {
-            conf.style.top = '110vh';
-        }, 20);
-        setTimeout(() => {
-            conf.remove();
-        }, 1450);
-    }
-}
-
-// Initial card render
-renderBingo();
+        conf.style.

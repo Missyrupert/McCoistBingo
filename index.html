@@ -15,15 +15,25 @@
         </h1>
         <div class="info-bar">
             <span id="instructions">
-                Click/tap each square when Ally says it. Mark every square for a Full House!
+                Click/tap each square when Ally says it. Win by marking a line or all squares!
             </span>
-            <span class="info-icon" title="How to play">&#9432;</span>
+            <span class="info-icon" title="How to play" tabindex="0">&#9432;</span>
+            <button id="contrast-btn" title="Toggle high contrast">🌓</button>
+            <button id="sound-btn" title="Toggle sound">🔊</button>
         </div>
-        <div class="bingo-grid" id="bingo-grid">
-            <!-- Squares will be filled by JS -->
+        <div class="bingo-customiser">
+            <textarea id="custom-input" rows="4" placeholder="Enter custom sayings, one per line (optional)"></textarea>
+            <button id="custom-btn">Use Custom Card</button>
         </div>
-        <button id="reset-btn">Reset Card</button>
+        <div class="bingo-grid" id="bingo-grid" aria-label="Bingo Board" role="grid">
+            <!-- JS fills this -->
+        </div>
+        <div class="bingo-actions">
+            <button id="reset-btn">Reset Card</button>
+            <button id="share-btn">Share Card</button>
+        </div>
     </div>
+    <audio id="win-audio" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12d9d5bfa6.mp3" preload="auto"></audio>
     <script src="script.js"></script>
 </body>
 </html>
