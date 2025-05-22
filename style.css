@@ -1,47 +1,149 @@
-const sayings = [
-    "That's what football's all about!",
-    "He’ll be disappointed with that.",
-    "Unbelievable, Jeff!",
-    "He’s having the time of his life!",
-    "You couldn't write the script!",
-    "It's a game of two halves!",
-    "He’s a big lad, isn’t he?",
-    "You just can't beat it!",
-    "It’s all happening now!",
-    "He’s got a wand of a left foot.",
-    "He’s given it everything there!",
-    "The atmosphere is electric!",
-    "Absolutely top drawer!",
-    "He’ll not want to see that again!",
-    "The keeper’s done ever so well there.",
-    "They’ve got to believe now!"
-];
+:root {
+    --main-bg: linear-gradient(135deg, #001F54 0%, #4169E1 100%);
+    --container-bg: rgba(0,0,0,0.19);
+    --square-bg: rgba(255,255,255,0.97);
+    --square-color: #001F54;
+    --active-bg: #FF4136;
+    --active-color: #fff;
+    --btn-bg: #4169E1;
+    --btn-hover-bg: #001F54;
+}
 
-function shuffle(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: var(--main-bg);
+    color: white;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    transition: background 0.3s;
+}
+
+body.high-contrast {
+    --main-bg: #111;
+    --container-bg: #fff;
+    --square-bg: #111;
+    --square-color: #fff;
+    --active-bg: #FFD700;
+    --active-color: #222;
+    --btn-bg: #FFD700;
+    --btn-hover-bg: #fff200;
+    color: #fff;
+}
+
+.container {
+    width: 97%;
+    max-width: 520px;
+    margin: 30px auto 40px auto;
+    background: var(--container-bg);
+    padding: 22px 12px 16px 12px;
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+h1 {
+    font-size: 2.3em;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+    color: white;
+    text-shadow: 2px 2px 8px #001F54, 0 0 2px #ff0000;
+}
+
+.red-text { color: #FF4136; }
+.blue-text { color: #00BFFF; }
+.white-text { color: #fff; }
+
+.info-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 7px;
+    font-size: 1.08em;
+    flex-wrap: wrap;
+}
+.info-icon {
+    font-size: 1.22em;
+    cursor: pointer;
+    color: #00BFFF;
+    background: none;
+    border: none;
+    user-select: none;
+    outline: none;
+}
+.info-icon:focus {
+    outline: 2px solid #FFD700;
+}
+#contrast-btn, #sound-btn {
+    background: none;
+    border: none;
+    font-size: 1.21em;
+    cursor: pointer;
+    margin-left: 4px;
+    color: #FFD700;
+    transition: color 0.2s;
+}
+#contrast-btn.active { color: #001F54; }
+#sound-btn.muted { opacity: 0.5; }
+
+.bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 17px 0;
+}
+.bingo-square {
+    background: var(--square-bg);
+    color: var(--square-color);
+    font-weight: 600;
+    padding: 15px 6px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 1px 2px 6px rgba(0,0,0,0.07);
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    font-size: 1.02em;
+    user-select: none;
+    outline: none;
+}
+.bingo-square.active {
+    background: var(--active-bg);
+    color: var(--active-color);
+    border: 2px solid #FFD700;
+}
+.bingo-square:focus {
+    outline: 2px solid #FFD700;
+}
+
+.bingo-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+#reset-btn, #share-btn {
+    background: var(--btn-bg);
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 1.07em;
+    cursor: pointer;
+    box-shadow: 1px 2px 8px rgba(0,0,0,0.08);
+}
+#reset-btn:hover, #share-btn:hover {
+    background: var(--btn-hover-bg);
+}
+
+@media (max-width: 700px) {
+    .bingo-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
-    return arr;
+    h1 { font-size: 1.35em; }
 }
-
-function renderBingo() {
-    const grid = document.getElementById('bingo-grid');
-    grid.innerHTML = '';
-    shuffle([...sayings]).forEach(saying => {
-        const square = document.createElement('div');
-        square.className = 'bingo-square';
-        square.textContent = saying;
-        square.onclick = () => {
-            square.classList.toggle('active');
-        };
-        grid.appendChild(square);
-    });
-}
-
-document.getElementById('reset-btn').onclick = () => {
-    renderBingo();
-};
-
-// Initial render
-renderBingo();
