@@ -1,20 +1,20 @@
 const sayings = [
-    "That's what football's all about!",
-    "He’ll be disappointed with that.",
-    "Unbelievable, Jeff!",
-    "He’s having the time of his life!",
+    "Uv goty say",
+    "He’ll be disappointed with that Fletch.",
+    "He's got tae score",
+    "Ul be honest wi ye",
     "You couldn't write the script!",
-    "It's a game of two halves!",
+    "It's a real privilege to be here Fletch",
     "He’s a big lad, isn’t he?",
-    "You just can't beat it!",
+    "He's got to do better there Fletch",
     "It’s all happening now!",
-    "He’s got a wand of a left foot.",
-    "He’s given it everything there!",
+    "That's a great save...a great save",
+    "It's the weight of the pass",
     "The atmosphere is electric!",
-    "Absolutely top drawer!",
-    "He’ll not want to see that again!",
+    "That's absolutely top drawer!",
+    "Ul tell ye something",
     "The keeper’s done ever so well there.",
-    "They’ve got to believe now!"
+    "I'm a fat Orange annoyingly repetitive cunt"
 ];
 
 function shuffle(arr) {
