@@ -25,10 +25,10 @@ function shuffle(arr) {
     return arr;
 }
 
-function renderBingo() {
+function renderBingo(sayingsArr = sayings) {  // <-- NEW: let it take an array argument
     const grid = document.getElementById('bingo-grid');
     grid.innerHTML = '';
-    shuffle([...sayings]).forEach(saying => {
+    shuffle([...sayingsArr]).forEach(saying => {
         const square = document.createElement('div');
         square.className = 'bingo-square';
         square.textContent = saying;
@@ -43,4 +43,18 @@ document.getElementById('reset-btn').onclick = () => {
     renderBingo();
 };
 
+document.getElementById('custom-btn').onclick = () => {  // <-- NEW: handle custom button
+    const input = document.getElementById('custom-input').value;
+    const customSayings = input
+        .split('\n')                  // split by line
+        .map(s => s.trim())           // trim spaces
+        .filter(s => s.length > 0);   // remove empty lines
+    if (customSayings.length > 0) {
+        renderBingo(customSayings);
+    } else {
+        renderBingo();
+    }
+};
+
+// On first load, show default card
 renderBingo();
